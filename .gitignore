@@ -1,0 +1,28 @@
+# Go
+/bin/
+/dist/
+*.exe
+
+# Python (только кеш, venv не нужен)
+__pycache__/
+*.pyc
+
+# IDE
+.idea/
+.vscode/
+
+# OS
+.DS_Store
+
+# Env
+venv/
+.venv/
+env/
+.env/
+__pycache__/
+.env
+configs/.env
+
+# Data
+python-service/data/*
+!python-service/data/.gitkeep

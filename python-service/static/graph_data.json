@@ -1,0 +1,703 @@
+{
+  "nodes": [
+    {
+      "id": "arrow function",
+      "label": "arrow function",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "allows writing a function in a more compact form",
+      "label": "allows writing a function in a more compact form",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "regular function",
+      "label": "regular function",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "button (or other object)",
+      "label": "button (or other object)",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "window.addEventListener",
+      "label": "window.addEventListener",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "window",
+      "label": "window",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "document.getElementById",
+      "label": "document.getElementById",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "button",
+      "label": "button",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "'=='",
+      "label": "'=='",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "loose equality comparison",
+      "label": "loose equality comparison",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "===",
+      "label": "===",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "strict equality comparison",
+      "label": "strict equality comparison",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "new Number(5)",
+      "label": "new Number(5)",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "5",
+      "label": "5",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "absolute",
+      "label": "absolute",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "positioning property",
+      "label": "positioning property",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "fixed",
+      "label": "fixed",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "relative",
+      "label": "relative",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "static",
+      "label": "static",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "display property",
+      "label": "display property",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "inherit",
+      "label": "inherit",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "block",
+      "label": "block",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "inline",
+      "label": "inline",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "inline-block",
+      "label": "inline-block",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "block elements",
+      "label": "block elements",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "display property behavior",
+      "label": "display property behavior",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    },
+    {
+      "id": "inline elements",
+      "label": "inline elements",
+      "shape": "dot",
+      "size": 25,
+      "font": {
+        "size": 14
+      },
+      "color": {
+        "background": "#059669",
+        "border": "#047857",
+        "highlight": {
+          "background": "#f59e0b",
+          "border": "#d97706"
+        }
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "arrow function",
+      "to": "allows writing a function in a more compact form",
+      "label": "helps write a function in a more concise format",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "regular function",
+      "to": "button (or other object)",
+      "label": "represents the object that calls the function",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "window.addEventListener",
+      "to": "window",
+      "label": "calls the function",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "document.getElementById",
+      "to": "button",
+      "label": "calls the function",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "'=='",
+      "to": "loose equality comparison",
+      "label": "compares for equality",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "===",
+      "to": "strict equality comparison",
+      "label": "compares for strict equality",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "new Number(5)",
+      "to": "5",
+      "label": "is not equal to",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "absolute",
+      "to": "positioning property",
+      "label": "positions an element absolutely",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "fixed",
+      "to": "positioning property",
+      "label": "sticks the element to a specific point on the screen",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "relative",
+      "to": "positioning property",
+      "label": "positions an element relative to its original position",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "static",
+      "to": "display property",
+      "label": "displays elements as usual",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "inherit",
+      "to": "display property",
+      "label": "inherits the value of the parent",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "block",
+      "to": "display property",
+      "label": "is a block-level element",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "inline",
+      "to": "display property",
+      "label": "is an inline-level element",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "inline-block",
+      "to": "display property",
+      "label": "is both an inline and a block-level element",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "block elements",
+      "to": "display property behavior",
+      "label": "are displayed one below the other",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    },
+    {
+      "from": "inline elements",
+      "to": "display property behavior",
+      "label": "are displayed in the same line, sequentially",
+      "arrows": "to",
+      "font": {
+        "size": 11,
+        "color": "#6b7280"
+      },
+      "color": {
+        "color": "#9ca3af",
+        "highlight": "#059669"
+      }
+    }
+  ]
+}

@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Логин</title>
+    <link rel="stylesheet" href="/style.css">
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #f4fff7;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .auth-container {
+            background: white;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+            width: 100%;
+            max-width: 420px;
+        }
+
+        h2 {
+            text-align: center;
+            color: #1d7a3a;
+            margin-bottom: 24px;
+        }
+
+        input {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            border: 1px solid #cfe8d5;
+            border-radius: 10px;
+            font-size: 14px;
+            box-sizing: border-box;
+        }
+
+        button {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 10px;
+            background: #2e9f52;
+            color: white;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        button:hover {
+            background: #248342;
+        }
+
+        .link-block {
+            margin-top: 18px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        a {
+            color: #2e9f52;
+            text-decoration: none;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+
+<div class="auth-container">
+    <h2>Вход в систему</h2>
+
+    <input id="email" placeholder="Email">
+    <input id="password" type="password" placeholder="Пароль">
+
+    <button onclick="login()">Войти</button>
+
+    <div class="link-block">
+        Нет аккаунта? <a href="/register.html">Регистрация</a>
+    </div>
+</div>
+
+<script>
+async function login() {
+    const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+            email: document.getElementById("email").value,
+            password: document.getElementById("password").value
+        })
+    });
+
+    const data = await response.json();
+    console.log("Login response:", data); 
+
+    const token = data.token || data.data?.token || data.access_token;
+    if (response.ok && token) {
+        localStorage.setItem("token", token);
+        window.location.href = "/index.html";
+    } else {
+        alert(data.message || data.error || "Ошибка входа");
+    }
+}
+</script>
+
+</body>
+</html>

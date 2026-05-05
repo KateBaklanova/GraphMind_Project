@@ -1,0 +1,18 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: kg-postgres-local
+    environment:
+      POSTGRES_USER: graph_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: graphdb
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_local_data:/var/lib/postgresql/data
+      - ./migrations:/docker-entrypoint-initdb.d
+
+volumes:
+  postgres_local_data:

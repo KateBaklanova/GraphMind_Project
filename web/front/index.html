@@ -1,0 +1,1292 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Knowledge Graph</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/vis/4.21.0/vis.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+        }
+        
+        /*!!! убрать в отдельный CSS*/
+
+        body {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .app {
+            width: 95%;
+            max-width: 1600px;
+            height: 90vh;
+            background: white;
+            border-radius: 24px;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.3);
+            display: flex;
+            overflow: hidden;
+        }
+
+        .sidebar {
+            width: 320px;
+            background: #f8fafc;
+            border-right: 2px solid #d1d5db;
+            padding: 24px 16px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 20px;
+        }
+
+        .logo-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #059669, #047857);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 20px;
+        }
+
+        .logo-text {
+            font-weight: 700;
+            font-size: 20px;
+            background: linear-gradient(135deg, #059669, #047857);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .new-graph-btn {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #059669, #047857);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            cursor: pointer;
+            font-size: 18px;
+            transition: all 0.2s;
+        }
+
+        .new-graph-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .sidebar-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 0 4px;
+        }
+
+        .sidebar-title {
+            font-size: 13px;
+            font-weight: 600;
+            color: #4b5563;
+            letter-spacing: 0.5px;
+        }
+
+        .refresh-btn {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 6px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .refresh-btn:hover {
+            background: #e5e7eb;
+            color: #059669;
+        }
+
+        .graph-list {
+            flex: 1;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            padding-right: 4px;
+        }
+
+        .graph-list::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .graph-list::-webkit-scrollbar-track {
+            background: #e5e7eb;
+            border-radius: 10px;
+        }
+
+        .graph-list::-webkit-scrollbar-thumb {
+            background: #9ca3af;
+            border-radius: 10px;
+        }
+
+        .graph-item {
+            padding: 16px;
+            background: white;
+            border-radius: 16px;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        .graph-item:hover {
+            border-color: #059669;
+            transform: translateX(4px);
+        }
+
+        .graph-item.active {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+
+        .graph-name {
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+        }
+
+        .graph-badge {
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 30px;
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .graph-meta {
+            display: flex;
+            gap: 12px;
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .graph-meta i {
+            margin-right: 2px;
+        }
+
+        .empty-graphs {
+            text-align: center;
+            padding: 40px 20px;
+            color: #9ca3af;
+            font-size: 13px;
+        }
+
+        .main {
+            flex: 1;
+            padding: 24px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .add-section {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid #d1d5db;
+        }
+
+        .section-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1f2937;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            border: 2px solid #d1d5db;
+            border-radius: 16px;
+            padding: 16px;
+            font-size: 14px;
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 16px;
+            transition: all 0.2s;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #059669;
+            box-shadow: 0 0 0 4px rgba(5, 150, 105, 0.1);
+        }
+
+        .file-zone {
+            border: 2px dashed #d1d5db;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 16px;
+            background: #f8fafc;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .file-zone:hover {
+            border-color: #059669;
+            background: #f0fdf4;
+        }
+
+        .add-btn {
+            background: white;
+            color: #059669;
+            border: 2px solid #059669;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+        }
+
+        .add-btn:hover {
+            background: #059669;
+            color: white;
+        }
+
+        .docs-list {
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid #d1d5db;
+        }
+
+        .docs-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+
+        .docs-header h3 {
+            font-size: 14px;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .process-btn {
+            background: linear-gradient(135deg, #059669, #047857);
+            color: white;
+            border: none;
+            border-radius: 40px;
+            padding: 12px 24px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(5, 150, 105, 0.3);
+        }
+
+        .process-btn:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(5, 150, 105, 0.4);
+        }
+
+        .process-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .docs-container {
+            max-height: 200px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+
+        .doc-item {
+            background: white;
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            border: 2px solid #d1d5db;
+        }
+
+        .doc-icon {
+            width: 32px;
+            height: 32px;
+            background: #e5e7eb;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4b5563;
+        }
+
+        .doc-info {
+            flex: 1;
+        }
+
+        .doc-name {
+            font-weight: 500;
+            color: #1f2937;
+            margin-bottom: 4px;
+            font-size: 13px;
+        }
+
+        .doc-meta {
+            font-size: 11px;
+            color: #6b7280;
+        }
+
+        .remove-doc {
+            background: none;
+            border: none;
+            color: #6b7280;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .remove-doc:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+
+        .viewer-section {
+            flex: 1;
+            background: #f8fafc;
+            border-radius: 20px;
+            padding: 20px;
+            border: 2px solid #d1d5db;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .viewer-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .viewer-title {
+            font-size: 16px;
+            font-weight: 600;
+            color: #1f2937;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .graph-stats {
+            display: flex;
+            gap: 16px;
+            font-size: 12px;
+            color: #6b7280;
+        }
+
+        .graph-stats span {
+            background: white;
+            padding: 4px 12px;
+            border-radius: 30px;
+            border: 1px solid #d1d5db;
+        }
+
+        #graph-container {
+            width: 100%;
+            height: 400px;
+            background: white;
+            border-radius: 12px;
+            border: 2px solid #d1d5db;
+            overflow: hidden;
+        }
+
+        .status-text {
+            font-size: 12px;
+            color: #059669;
+            margin-top: 8px;
+            min-height: 20px;
+        }
+
+        .graph-info {
+            margin-top: 12px;
+            font-size: 12px;
+            color: #6b7280;
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        .graph-info-item {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .documents-list {
+            margin-top: 16px;
+            padding: 12px;
+            background: white;
+            border-radius: 12px;
+            border: 1px solid #d1d5db;
+        }
+
+        .documents-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            font-size: 12px;
+            color: #1f2937;
+        }
+
+        .document-item {
+            padding: 6px 0;
+            font-size: 11px;
+            color: #4b5563;
+            border-bottom: 1px solid #e5e7eb;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .document-item:last-child {
+            border-bottom: none;
+        }
+
+        .editable-title {
+            padding: 4px 8px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .editable-title:hover {
+            background: #f3f4f6;
+        }
+
+        .title-input {
+            font-size: 16px;
+            font-weight: 600;
+            border: 2px solid #059669;
+            border-radius: 6px;
+            padding: 4px 8px;
+            outline: none;
+        }
+        
+        .delete-graph {
+            background: none;
+            border: none;
+            color: #9ca3af;
+            cursor: pointer;
+            padding: 4px;
+            border-radius: 6px;
+            transition: all 0.2s;
+        }
+
+        .delete-graph:hover {
+            background: #fee2e2;
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <div class="sidebar">
+            <div class="logo">
+                <div class="logo-left">
+                    <div class="logo-icon"><i class="fas fa-project-diagram"></i></div>
+                    <span class="logo-text">GraphMind</span>
+                </div>
+                <button class="new-graph-btn" id="newGraphBtn" title="Создать новый граф">
+                    <i class="fas fa-plus"></i>
+                </button>
+            </div>
+            
+            <div class="sidebar-header">
+                <span class="sidebar-title">МОИ ГРАФЫ</span>
+                <button class="refresh-btn" onclick="loadGraphs()" title="Обновить список">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+            </div>
+            
+            <div class="graph-list" id="graphList">
+                <div class="empty-graphs">
+                    <i class="fas fa-folder-open" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                    Нет сохраненных графов<br>
+                    Нажмите <i class="fas fa-plus"></i> чтобы создать
+                </div>
+            </div>
+        </div>
+
+        <div class="main">
+            <div class="add-section" id="addSection" style="display: none;">
+                <div class="section-title">
+                    <i class="fas fa-plus-circle" style="color: #059669;"></i>
+                    <span id="addSectionTitle">Создание нового графа</span>
+                </div>
+                
+                <div class="file-zone" id="fileZone">
+                    <i class="fas fa-cloud-upload-alt" style="font-size: 32px; color: #6b7280; margin-bottom: 10px; display: block;"></i>
+                    <span>Нажмите или перетащите файл .txt</span>
+                </div>
+                <input type="file" id="fileInput" accept=".txt" style="display: none;">
+                
+                <textarea id="textInput" placeholder="Или введите текст для анализа..."></textarea>
+                
+                <div style="display: flex; gap: 12px;">
+                    <button class="add-btn" id="addTextBtn">
+                        <i class="fas fa-plus"></i> Добавить текст
+                    </button>
+                    <button class="add-btn" id="createGraphBtn" disabled style="background: #059669; color: white;">
+                        <i class="fas fa-project-diagram"></i> Создать граф
+                    </button>
+                </div>
+            </div>
+
+            <div class="docs-list" id="docsListSection" style="display: none;">
+                <div class="docs-header">
+                    <h3>
+                        <i class="fas fa-file-alt" style="color: #059669;"></i>
+                        Документы для <span id="currentGraphLabel">графа</span>
+                    </h3>
+                </div>
+                <div id="docsContainer" class="docs-container"></div>
+                <div class="status-text" id="status"></div>
+            </div>
+
+            <div class="viewer-section">
+                <div class="viewer-header">
+                    <div class="viewer-title">
+                        <i class="fas fa-eye" style="color: #059669;"></i>
+                        <span id="currentGraphName" class="editable-title">Выберите граф</span>
+                    </div>
+                    <div class="graph-stats" id="graphStats"></div>
+                </div>
+                <div id="graph-container">
+                    <div style="text-align: center; padding: 40px; color: #6b7280;">
+                        <i class="fas fa-project-diagram" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>
+                        Выберите граф из списка слева<br>или создайте новый
+                    </div>
+                </div>
+                <div class="graph-info" id="graphInfo"></div>
+                <div id="graphDocuments" class="documents-list" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let graphs = [];
+        let currentDocs = [];
+        let selectedGraphId = null;
+        let currentNetwork = null;
+        let currentGraphData = null;
+        let isCreatingNew = false;
+
+        const graphList = document.getElementById('graphList');
+        const addSection = document.getElementById('addSection');
+        const docsListSection = document.getElementById('docsListSection');
+        const textInput = document.getElementById('textInput');
+        const addTextBtn = document.getElementById('addTextBtn');
+        const docsContainer = document.getElementById('docsContainer');
+        const createGraphBtn = document.getElementById('createGraphBtn');
+        const status = document.getElementById('status');
+        const graphContainer = document.getElementById('graph-container');
+        const currentGraphName = document.getElementById('currentGraphName');
+        const graphStats = document.getElementById('graphStats');
+        const graphInfo = document.getElementById('graphInfo');
+        const graphDocuments = document.getElementById('graphDocuments');
+        const newGraphBtn = document.getElementById('newGraphBtn');
+        const fileZone = document.getElementById('fileZone');
+        const fileInput = document.getElementById('fileInput');
+        const addSectionTitle = document.getElementById('addSectionTitle');
+        const currentGraphLabel = document.getElementById('currentGraphLabel');
+
+        async function loadGraphs() {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                window.location.href = "/login.html";
+                return;
+            }
+
+            try {
+                const response = await fetch("http://localhost:8081/api/graphs", {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    graphs = result.data || [];
+                    renderGraphList();
+                } else if (response.status === 401) {
+                    localStorage.removeItem("token");
+                    window.location.href = "/login.html";
+                }
+            } catch (error) {
+                console.error('Ошибка загрузки графов:', error);
+            }
+        }
+
+        function clearGraphView() {
+            graphContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;"><i class="fas fa-project-diagram" style="font-size: 48px; margin-bottom: 16px; display: block;"></i>Выберите граф из списка слева<br>или создайте новый</div>';
+            currentGraphName.textContent = 'Выберите граф';
+            graphStats.innerHTML = '';
+            graphInfo.innerHTML = '';
+            graphDocuments.style.display = 'none';
+        }
+
+        async function saveGraph(graphData) {
+            const token = localStorage.getItem("token");
+            if (!token) return null;
+
+            try {
+                const response = await fetch('http://localhost:8081/api/graphs', {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({
+                        name: graphData.name,
+                        description: graphData.summary,
+                        is_public: false
+                    })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    return result.data;
+                }
+                return null;
+            } catch (error) {
+                console.error(error);
+                return null;
+            }
+        }
+
+        async function saveGraphNodesAndEdges(graphId, nodes, edges) {
+            const token = localStorage.getItem("token");
+            if (!token) return false;
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/graphs/${graphId}/data`, {
+                    method: 'POST',
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({ nodes, edges })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error(error);
+                return false;
+            }
+        }
+
+        function enableTitleEditing() {
+            const titleEl = document.getElementById("currentGraphName");
+
+            titleEl.addEventListener("click", () => {
+                if (!selectedGraphId) return;
+
+                const currentText = titleEl.textContent;
+
+                const input = document.createElement("input");
+                input.value = currentText;
+                input.className = "title-input";
+
+                titleEl.replaceWith(input);
+                input.focus();
+
+                let isSaving = false;
+
+                const save = async () => {
+                    if (isSaving) return;
+                    isSaving = true;
+
+                    const newName = input.value.trim();
+
+                    if (input.parentNode) {
+                        input.replaceWith(titleEl);
+                    }
+
+                    if (!newName || newName === currentText) {
+                        titleEl.textContent = currentText;
+                        return;
+                    }
+
+                    const success = await updateGraphName(selectedGraphId, newName);
+
+                    titleEl.textContent = success ? newName : currentText;
+
+                    if (success) loadGraphs();
+                };
+
+                input.addEventListener("blur", save);
+                input.addEventListener("keydown", (e) => {
+                    if (e.key === "Enter") {
+                        e.preventDefault();
+                        input.blur(); 
+                    }
+                });
+            });
+        }
+
+        async function updateGraphName(graphId, name) {
+            const token = localStorage.getItem("token");
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/graphs/${graphId}`, {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type": "application/json",
+                        "Authorization": "Bearer " + token
+                    },
+                    body: JSON.stringify({ name })
+                });
+
+                return response.ok;
+            } catch (err) {
+                console.error(err);
+                return false;
+            }
+        }
+
+        async function addDocumentToGraph(graphId, name, content) {
+            const token = localStorage.getItem("token");
+            if (!token) return false;
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/graphs/${graphId}/documents`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': "Bearer " + token
+                    },
+                    body: JSON.stringify({ name, content, type: 'text' })
+                });
+                return response.ok;
+            } catch (error) {
+                console.error('Error adding document:', error);
+                return false;
+            }
+        }
+
+        async function loadGraphDocuments(graphId) {
+            const token = localStorage.getItem("token");
+            if (!token) return [];
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/graphs/${graphId}/documents`, {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+                if (response.ok) {
+                    const result = await response.json();
+                    return result.data || [];
+                }
+            } catch (error) {
+                console.error('Error loading documents:', error);
+            }
+            return [];
+        }
+
+        function renderGraphList() {
+            if (graphs.length === 0) {
+                graphList.innerHTML = `
+                    <div class="empty-graphs">
+                        <i class="fas fa-folder-open" style="font-size: 24px; margin-bottom: 10px; display: block;"></i>
+                        Нет сохраненных графов<br>
+                        Нажмите <i class="fas fa-plus"></i> чтобы создать
+                    </div>
+                `;
+                return;
+            }
+
+            graphList.innerHTML = graphs.map(graph => {
+                const date = new Date(graph.created_at).toLocaleString('ru', {
+                    day: '2-digit', month: '2-digit', year: 'numeric'
+                });
+                
+                return `
+                    <div class="graph-item ${selectedGraphId === graph.id ? 'active' : ''}" data-id="${graph.id}">
+                        <div class="graph-name">
+                            ${graph.name || 'Без названия'}
+                            <button class="delete-graph" data-id="${graph.id}" title="Удалить">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                        </div>
+                        <div class="graph-meta">
+                            <span><i class="fas fa-calendar"></i> ${date}</span>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            document.querySelectorAll('.delete-graph').forEach(btn => {
+                btn.addEventListener('click', async (e) => {
+                    e.stopPropagation(); // чтобы не открывался
+
+                    const id = btn.dataset.id;
+
+                    if (!confirm('Удалить граф?')) return;
+
+                    const token = localStorage.getItem("token");
+
+                    try {
+                        const res = await fetch(`http://localhost:8081/api/graphs/${id}`, {
+                            method: 'DELETE',
+                            headers: {
+                                "Authorization": "Bearer " + token
+                            }
+                        });
+
+                        if (res.ok) {
+                            if (selectedGraphId === id) {
+                                selectedGraphId = null;
+                                clearGraphView();
+                            }
+
+                            await loadGraphs();
+                        } else {
+                            alert('Ошибка удаления');
+                        }
+
+                    } catch (err) {
+                        console.error(err);
+                        alert('Ошибка соединения');
+                    }
+                });
+            });
+
+            document.querySelectorAll('.graph-item').forEach(item => {
+                item.addEventListener('click', async () => {
+                    const id = item.dataset.id;
+                    selectedGraphId = id;
+                    isCreatingNew = false;
+                    addSection.style.display = 'none';
+                    docsListSection.style.display = 'none';
+                    renderGraphList();
+                    await loadAndDisplayGraph(id);
+                });
+            });
+        }
+
+        async function loadAndDisplayGraph(graphId) {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+
+            try {
+                const response = await fetch(`http://localhost:8081/api/graphs/${graphId}`, {
+                    headers: { "Authorization": "Bearer " + token }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const graph = result.data;
+                    currentGraphData = graph;
+                    
+                    const documents = await loadGraphDocuments(graphId);
+                    
+                    renderGraphView(graph, documents);
+                }
+            } catch (error) {
+                console.error('Error loading graph:', error);
+            }
+        }
+
+        function renderCurrentDocs() {
+            createGraphBtn.disabled = currentDocs.length === 0;
+            currentGraphLabel.textContent = isCreatingNew ? 'нового графа' : (currentGraphData?.name || 'графа');
+
+            if (currentDocs.length === 0) {
+                docsContainer.innerHTML = '<div style="text-align: center; padding: 20px; color: #6b7280;">Нет добавленных документов</div>';
+                return;
+            }
+
+            docsContainer.innerHTML = currentDocs.map((doc, idx) => `
+                <div class="doc-item">
+                    <div class="doc-icon">
+                        <i class="fas fa-file-alt" style="color: #059669;"></i>
+                    </div>
+                    <div class="doc-info">
+                        <div class="doc-name">${doc.name}</div>
+                        <div class="doc-meta">${doc.date}</div>
+                    </div>
+                    <button class="remove-doc" data-idx="${idx}">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+            `).join('');
+
+            document.querySelectorAll('.remove-doc').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const idx = parseInt(btn.dataset.idx);
+                    currentDocs.splice(idx, 1);
+                    renderCurrentDocs();
+                    showStatus('Документ удален', false);
+                });
+            });
+        }
+
+        function renderGraphView(graph, documents = []) {
+            const nodesArray = graph.nodes || [];
+            const edgesArray = graph.edges || [];
+
+            if (nodesArray.length === 0) {
+                graphContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #6b7280;">В этом графе пока нет узлов</div>';
+                return;
+            }
+
+            currentGraphName.textContent = graph.name || 'Граф без названия';
+            
+            // Статистика по типам
+            const typeStats = {};
+            nodesArray.forEach(n => {
+                const type = n.type || 'concept';
+                typeStats[type] = (typeStats[type] || 0) + 1;
+            });
+            
+            graphStats.innerHTML = `
+                <span><i class="fas fa-circle-nodes"></i> ${nodesArray.length} узлов</span>
+                <span><i class="fas fa-link"></i> ${edgesArray.length} связей</span>
+                <span><i class="fas fa-tags"></i> ${Object.keys(typeStats).length} типов</span>
+            `;
+            
+            graphInfo.innerHTML = `
+                <span class="graph-info-item"><i class="fas fa-file-alt"></i> Документов: ${documents.length}</span>
+                <span class="graph-info-item"><i class="fas fa-calendar"></i> Создан: ${new Date(graph.created_at).toLocaleString()}</span>
+            `;
+
+            if (documents.length > 0) {
+                graphDocuments.style.display = 'block';
+                graphDocuments.innerHTML = `
+                    <div class="documents-title">Документы графа:</div>
+                    ${documents.map(doc => `
+                        <div class="document-item">
+                            <span>${doc.name}</span>
+                            <span style="color: #6b7280;">${new Date(doc.created_at).toLocaleString()}</span>
+                        </div>
+                    `).join('')}
+                `;
+            } else {
+                graphDocuments.style.display = 'none';
+            }
+
+            graphContainer.innerHTML = '';
+
+            // Цвета для разных типов
+            // НЕ РАБОТАЕТ исправить в БД !!!
+            const typeColors = {
+                'person': { background: '#3b82f6', border: '#2563eb' },
+                'place': { background: '#10b981', border: '#059669' },
+                'organization': { background: '#8b5cf6', border: '#7c3aed' },
+                'event': { background: '#f59e0b', border: '#d97706' },
+                'work': { background: '#ec489a', border: '#db2777' },
+                'date': { background: '#14b8a6', border: '#0d9488' },
+                'concept': { background: '#6b7280', border: '#4b5563' }
+            };
+            
+            const typeLabels = {
+                'person': 'Человек',
+                'place': 'Место',
+                'organization': 'Организация',
+                'event': 'Событие',
+                'work': 'Произведение',
+                'date': 'Дата',
+                'concept': 'Понятие'
+            };
+
+            const visNodes = new vis.DataSet(nodesArray.map(node => {
+                const type = node.type || 'concept';
+                const color = typeColors[type] || typeColors.concept;
+                const importance = node.metadata?.importance || node.importance || 'medium';
+                const importanceIcon = importance === 'high' ? '⭐' : (importance === 'medium' ? '●' : '○');
+                
+                const title = `
+                    <div style="padding: 8px; max-width: 250px;">
+                        <b>${node.label}</b><br>
+                        <span style="color: #666;">${typeLabels[type] || type}</span><br>
+                        ${node.description ? `<span style="color: #666; font-size: 11px;">${node.description}</span><br>` : ''}
+                        <span style="color: #666;">${importanceIcon} Важность: ${importance === 'high' ? 'Высокая' : (importance === 'medium' ? 'Средняя' : 'Низкая')}</span>
+                    </div>
+                `;
+                
+                return {
+                    id: node.id,
+                    label: node.label,
+                    title: title,
+                    shape: 'box',
+                    size: importance === 'high' ? 35 : (importance === 'medium' ? 30 : 25),
+                    font: { size: 14, color: 'white' },
+                    color: {
+                        background: color.background,
+                        border: color.border,
+                        highlight: { background: '#f59e0b', border: '#d97706' }
+                    }
+                };
+            }));
+
+            const visEdges = new vis.DataSet(edgesArray.map(edge => ({
+                from: edge.from,
+                to: edge.to,
+                label: edge.label,
+                title: edge.label,
+                arrows: 'to',
+                font: { size: 11, color: '#6b7280' },
+                color: { color: '#9ca3af', highlight: '#059669' },
+                smooth: { type: 'curvedCW', roundness: 0.2 }
+            })));
+
+            const data = { nodes: visNodes, edges: visEdges };
+            const options = {
+                physics: { enabled: true, stabilization: { iterations: 100 } },
+                interaction: { hover: true, tooltipDelay: 200, navigationButtons: true, keyboard: true },
+                layout: { improvedLayout: true, randomSeed: 42 },
+                nodes: { borderWidth: 2, shadow: true },
+                edges: { shadow: true, width: 2, smooth: true }
+            };
+
+            try {
+                currentNetwork = new vis.Network(graphContainer, data, options);
+                currentNetwork.once('stabilizationIterationsDone', () => currentNetwork.fit());
+            } catch (error) {
+                console.error('Ошибка создания графа:', error);
+                graphContainer.innerHTML = '<div style="text-align: center; padding: 40px; color: #dc2626;">Ошибка отображения графа</div>';
+            }
+            enableTitleEditing();
+        }
+
+        function showStatus(msg, isError = false) {
+            status.textContent = msg;
+            status.style.color = isError ? '#dc2626' : '#059669';
+        }
+
+        // Новая кнопка создания графа
+        newGraphBtn.addEventListener('click', () => {
+            isCreatingNew = true;
+            selectedGraphId = null;
+            currentDocs = [];
+            addSection.style.display = 'block';
+            docsListSection.style.display = 'block';
+            addSectionTitle.textContent = 'Создание нового графа';
+            renderCurrentDocs();
+            clearGraphView();
+            renderGraphList();
+            textInput.value = '';
+        });
+
+        // Добавление текста
+        addTextBtn.addEventListener('click', () => {
+            const text = textInput.value.trim();
+            if (!text) {
+                showStatus('Введите текст', true);
+                return;
+            }
+
+            currentDocs.push({
+                name: `Текст ${currentDocs.length + 1}`,
+                content: text,
+                date: new Date().toLocaleString()
+            });
+
+            renderCurrentDocs();
+            textInput.value = '';
+            showStatus('Текст добавлен');
+        });
+
+        // Загрузка файла
+        fileZone.addEventListener('click', () => fileInput.click());
+        fileZone.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            fileZone.style.borderColor = '#059669';
+        });
+        fileZone.addEventListener('dragleave', () => {
+            fileZone.style.borderColor = '#d1d5db';
+        });
+        fileZone.addEventListener('drop', (e) => {
+            e.preventDefault();
+            fileZone.style.borderColor = '#d1d5db';
+            const file = e.dataTransfer.files[0];
+            if (file && file.name.endsWith('.txt')) readFile(file);
+        });
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files[0]) readFile(e.target.files[0]);
+        });
+
+        function readFile(file) {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                currentDocs.push({
+                    name: file.name,
+                    content: e.target.result,
+                    date: new Date().toLocaleString()
+                });
+                renderCurrentDocs();
+                showStatus(`Файл "${file.name}" добавлен`);
+            };
+            reader.readAsText(file, 'UTF-8');
+        }
+
+        
+
+        // Создание графа
+        createGraphBtn.addEventListener('click', async () => {
+            if (currentDocs.length === 0) {
+                showStatus('Добавьте текст или файл', true);
+                return;
+            }
+
+            showStatus('Извлекаем триплеты...');
+            const allText = currentDocs.map(d => d.content).join('\n');
+
+            try {
+                const response = await fetch('http://localhost:8000/visualize', {
+                    method: 'POST',
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ text: allText })
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    const graphData = result.graph_data;
+                    
+                    if (!graphData || !graphData.nodes || graphData.nodes.length === 0) {
+                        showStatus('Нет данных для графа', true);
+                        return;
+                    }
+                    
+                    const token = localStorage.getItem("token");
+                    if (!token) {
+                        window.location.href = "/login.html";
+                        return;
+                    }
+                    
+                    const graphForSave = {
+                        name: `Граф от ${new Date().toLocaleString()}`,
+                        description: `Извлечено ${result.triplets_count} триплетов`,
+                        is_public: false
+                    };
+                    
+                    const createResponse = await fetch('http://localhost:8081/api/graphs', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify(graphForSave)
+                    });
+                    
+                    if (!createResponse.ok) {
+                        showStatus('Ошибка создания графа', true);
+                        return;
+                    }
+                    
+                    const createResult = await createResponse.json();
+                    const savedGraph = createResult.data;
+                    const graphId = savedGraph.id;
+                    
+                    const nodesForDb = graphData.nodes.map(n => ({
+                        id: n.id,
+                        label: n.label,
+                        type: n.type || 'concept',
+                        description: n.description || '',
+                        metadata: {
+                            importance: n.importance || 'medium'
+                        }
+                    }));
+                    
+                    const edgesForDb = graphData.edges.map(e => ({
+                        from: e.from,
+                        to: e.to,
+                        label: e.label
+                    }));
+                    
+                    const dataResponse = await fetch(`http://localhost:8081/api/graphs/${graphId}/data`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'Authorization': 'Bearer ' + token
+                        },
+                        body: JSON.stringify({
+                            nodes: nodesForDb,
+                            edges: edgesForDb
+                        })
+                    });
+                    
+                    if (!dataResponse.ok) {
+                        showStatus('Ошибка сохранения графа', true);
+                        return;
+                    }
+                
+                    for (const doc of currentDocs) {
+                        await addDocumentToGraph(graphId, doc.name, doc.content);
+                    }
+                    
+                    await loadGraphs();
+                    currentDocs = [];
+                    renderCurrentDocs();
+                    selectedGraphId = graphId;
+                    isCreatingNew = false;
+                    addSection.style.display = 'none';
+                    docsListSection.style.display = 'none';
+                    
+                    await loadAndDisplayGraph(graphId);
+                    renderGraphList();
+                    showStatus('Граф сохранен в БД!');
+                    
+                } else {
+                    const error = await response.text();
+                    console.error('Ошибка сервера:', error);
+                    showStatus('Ошибка создания графа', true);
+                }
+            } catch (error) {
+                console.error('Ошибка:', error);
+                showStatus('Ошибка соединения с Python сервером', true);
+            }
+        });
+
+        loadGraphs();
+    </script>
+</body>
+</html>
