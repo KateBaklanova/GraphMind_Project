@@ -3,7 +3,7 @@
 ----------------------
 docker compose up -d
 docker ps
-docker exec -it kg-ollama ollama pull mistral
+docker exec -it kg-ollama ollama pull mistral ИЛИ иная модель (phi3, gemma2, llama и т.д.)
 ----------------------
 БД
 psql -U graph_user -d graphdb -h localhost -p 5432
