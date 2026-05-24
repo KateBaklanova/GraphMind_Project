@@ -237,6 +237,7 @@ func (h *GraphHandler) SaveGraphData(w http.ResponseWriter, r *http.Request) {
 			GraphID:   graphID,
 			Label:     utils.SanitizeInput(n.Label),
 			Type:      n.Type,
+			Metadata:  n.Metadata,
 			CreatedAt: time.Now(),
 		})
 	}
@@ -328,7 +329,6 @@ func (h *GraphHandler) SaveGraphData(w http.ResponseWriter, r *http.Request) {
 }
 
 // Статистика графа
-// Убрать ???
 func (h *GraphHandler) GetGraphStats(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	graphID := vars["id"]

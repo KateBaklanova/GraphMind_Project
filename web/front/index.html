@@ -547,14 +547,13 @@
                 const type = node.type || 'concept';
                 const color = typeColors[type] || typeColors.concept;
                 const importance = node.metadata?.importance || node.importance || 'medium';
-                const importanceIcon = importance === 'high' ? '*' : (importance === 'medium' ? '●' : '○');
                 
                 const title = `
                     <div style="padding: 8px; max-width: 250px;">
                         <b>${node.label}</b><br>
                         <span style="color: #666;">${typeLabels[type] || type}</span><br>
                         ${node.description ? `<span style="color: #666; font-size: 11px;">${node.description}</span><br>` : ''}
-                        <span style="color: #666;">${importanceIcon} Важность: ${importance === 'high' ? 'Высокая' : (importance === 'medium' ? 'Средняя' : 'Низкая')}</span>
+                        <span style="color: #666;"> Важность: ${importance === 'high' ? 'Высокая' : (importance === 'medium' ? 'Средняя' : 'Низкая')}</span>
                     </div>
                 `;
                 
@@ -563,7 +562,7 @@
                     label: node.label,
                     title: title,
                     shape: 'box',
-                    size: importance === 'high' ? 35 : (importance === 'medium' ? 30 : 25),
+                    size: importance === 'high' ? 35 : importance === 'medium' ? 30 : 25,
                     font: { size: 14, color: 'white' },
                     color: {
                         background: color.background,
@@ -774,9 +773,13 @@
                         type: n.type || 'concept',
                         description: n.description || '',
                         metadata: {
-                            importance: n.importance || 'medium'
+                            importance: n.metadata?.importance || 'medium'
                         }
                     }));
+
+                    
+                    console.log(graphData.nodes)
+                    console.log(graphData.nodes)
                     
                     const edgesForDb = graphData.edges.map(e => ({
                         from: e.from,

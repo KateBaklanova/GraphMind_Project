@@ -107,9 +107,11 @@ type GraphDataRequest struct {
 }
 
 type NodeInput struct {
-	ID    string `json:"id"`
-	Label string `json:"label"`
-	Type  string `json:"type,omitempty"`
+	ID          string                 `json:"id"`
+	Label       string                 `json:"label"`
+	Type        string                 `json:"type,omitempty"`
+	Description string                 `json:"description,omitempty"`
+	Metadata    map[string]interface{} `json:"metadata,omitempty"`
 }
 
 type EdgeInput struct {

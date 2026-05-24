@@ -201,7 +201,21 @@ def enrich_graph(graph):
         degree[e["to"]] += 1
 
     for n in graph["nodes"]:
-        n["weight"] = degree[n["id"]]
+        
+        weight = degree[n["id"]]
+
+        if weight >= 5:
+            importance = "high"
+        elif weight >= 3:
+            importance = "medium"
+        else:
+            importance = "low"
+
+        n["weight"] = weight
+
+        n["metadata"] = {
+            "importance": importance
+        }
 
     return graph
 

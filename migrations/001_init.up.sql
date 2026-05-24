@@ -35,7 +35,7 @@ CREATE TABLE IF NOT EXISTS documents (
 -- Таблица узлов
 CREATE TABLE IF NOT EXISTS nodes (
     id VARCHAR(36) NOT NULL,
-    graph_id VARCHAR(36) NOT NULL REFERENCES graphs(id) ON DELETE CASCADE,
+    graph_id VARCHAR(255) NOT NULL REFERENCES graphs(id) ON DELETE CASCADE,
     label VARCHAR(255) NOT NULL,
     type VARCHAR(50),
     metadata JSONB,
