@@ -11,6 +11,7 @@ import (
 
 	"github.com/kate/knowledge-graph/internal/pkg/auth"
 	"github.com/kate/knowledge-graph/internal/pkg/handlers"
+	"github.com/kate/knowledge-graph/internal/pkg/middleware"
 	"github.com/kate/knowledge-graph/internal/pkg/repository"
 )
 
@@ -48,6 +49,8 @@ func main() {
 
 	router := mux.NewRouter()
 
+	router.Use(middleware.Logger)
+	router.Use(middleware.Recovery)
 	router.Use(corsMiddleware)
 
 	// Публичные

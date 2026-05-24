@@ -55,7 +55,14 @@ func (h *GraphHandler) CreateGraph(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if err := h.repo.CreateGraph(graph); err != nil {
-		Error(w, http.StatusInternalServerError, "failed to create graph")
+
+		log.Printf(
+			"CreateGraph repo error: %v",
+			err,
+		)
+
+		Error(w, http.StatusInternalServerError, err.Error())
+
 		return
 	}
 
@@ -95,6 +102,8 @@ func (h *GraphHandler) GetGraph(w http.ResponseWriter, r *http.Request) {
 		Error(w, http.StatusForbidden, "access denied")
 		return
 	}
+
+	go h.repo.IncrementGraphViews(graphID)
 
 	Success(w, http.StatusOK, "graph retrieved", graph)
 }
@@ -144,6 +153,8 @@ func (h *GraphHandler) UpdateGraph(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	log.Println("UPDATED:", graphID)
+
 	Success(w, http.StatusOK, "graph updated", existing)
 }
 
@@ -161,6 +172,8 @@ func (h *GraphHandler) DeleteGraph(w http.ResponseWriter, r *http.Request) {
 		Error(w, http.StatusNotFound, "graph not found")
 		return
 	}
+
+	log.Println("DELETED:", graphID)
 
 	Success(w, http.StatusOK, "graph deleted", nil)
 }
@@ -189,6 +202,13 @@ func (h *GraphHandler) SaveGraphData(w http.ResponseWriter, r *http.Request) {
 
 	vars := mux.Vars(r)
 	graphID := vars["id"]
+
+	start := time.Now()
+
+	log.Printf(
+		"[SaveGraphData] START graph=%s",
+		graphID,
+	)
 
 	graph, err := h.repo.GetGraphByID(graphID)
 	if err != nil || graph.UserID != claims.UserID {
@@ -292,6 +312,14 @@ func (h *GraphHandler) SaveGraphData(w http.ResponseWriter, r *http.Request) {
 		Error(w, http.StatusInternalServerError, err.Error())
 		return
 	}
+
+	defer func() {
+		log.Printf(
+			"[SaveGraphData] DONE graph=%s duration=%s",
+			graphID,
+			time.Since(start),
+		)
+	}()
 
 	Success(w, http.StatusOK, "graph data saved", map[string]interface{}{
 		"nodes_count": len(nodes),

@@ -14,10 +14,10 @@ func ValidateEmail(email string) bool {
 
 func ValidatePassword(password string) (bool, string) {
 	if len(password) < 8 {
-		return false, "password must be at least 8 characters"
+		return false, "Пароль должен быть длинне 8 символов"
 	}
 	if len(password) > 72 {
-		return false, "password must be less than 72 characters"
+		return false, "Пароль не может быть длинее 72 символов"
 	}
 
 	var hasUpper, hasLower, hasNumber, hasSpecial bool
@@ -35,16 +35,16 @@ func ValidatePassword(password string) (bool, string) {
 	}
 
 	if !hasUpper {
-		return false, "password must contain at least one uppercase letter"
+		return false, "В пароле должна быть как минимум 1 заглавная буква"
 	}
 	if !hasLower {
-		return false, "password must contain at least one lowercase letter"
+		return false, "В пароле должна быть как минимум одна прописная буква"
 	}
 	if !hasNumber {
-		return false, "password must contain at least one number"
+		return false, "В пароле должна быть как минимум одна цифра"
 	}
 	if !hasSpecial {
-		return false, "password must contain at least one special character"
+		return false, "В пароле должен быть как минимум однин спец. символ"
 	}
 	return true, ""
 }
@@ -60,10 +60,10 @@ func SanitizeInput(input string) string {
 
 func ValidateGraphName(name string) (bool, string) {
 	if len(name) < 1 {
-		return false, "graph name cannot be empty"
+		return false, "Имя графа не может быть пустым"
 	}
 	if len(name) > 100 {
-		return false, "graph name must be less than 100 characters"
+		return false, "Имя графа не может превышать 100 символов"
 	}
 	return true, ""
 }

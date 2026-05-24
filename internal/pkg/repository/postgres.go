@@ -1,8 +1,10 @@
 package repository
 
 import (
+	"context"
 	"database/sql"
 	"encoding/json"
+	"time"
 
 	"github.com/kate/knowledge-graph/internal/pkg/models"
 	_ "github.com/lib/pq"
@@ -12,6 +14,7 @@ type PostgresRepository struct {
 	db *sql.DB
 }
 
+// Создание через докер (папка migration)
 func NewPostgresRepository(connStr string) (*PostgresRepository, error) {
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
@@ -19,10 +22,6 @@ func NewPostgresRepository(connStr string) (*PostgresRepository, error) {
 	}
 
 	if err := db.Ping(); err != nil {
-		return nil, err
-	}
-
-	if err := createTables(db); err != nil {
 		return nil, err
 	}
 
@@ -95,8 +94,17 @@ func (r *PostgresRepository) GetGraphsByUserID(userID string) ([]models.Graph, e
 	return graphs, nil
 }
 
+func (r *PostgresRepository) IncrementGraphViews(id string) error {
+	_, err := r.db.Exec(`
+		UPDATE graphs
+		SET view_count = view_count + 1
+		WHERE id = $1
+	`, id)
+
+	return err
+}
+
 func (r *PostgresRepository) GetGraphByID(id string) (*models.Graph, error) {
-	r.db.Exec("UPDATE graphs SET view_count = view_count + 1 WHERE id = $1", id)
 
 	var g models.Graph
 	query := `SELECT id, user_id, name, description, summary, is_public, view_count, created_at, updated_at 
@@ -184,7 +192,10 @@ func (r *PostgresRepository) GetPublicGraphs(limit, offset int) ([]models.Graph,
 
 // Node methods
 func (r *PostgresRepository) AddNodesBatch(nodes []models.Node) error {
-	tx, err := r.db.Begin()
+	ctx, cancel := context.WithTimeout(context.Background(), 360*time.Second)
+	defer cancel()
+
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -193,7 +204,7 @@ func (r *PostgresRepository) AddNodesBatch(nodes []models.Node) error {
 	for _, node := range nodes {
 		metadata, _ := json.Marshal(node.Metadata)
 
-		_, err := tx.Exec(`
+		_, err := tx.ExecContext(ctx, `
 			INSERT INTO nodes (
 				id, graph_id, label, type, metadata, created_at
 			)
@@ -222,7 +233,10 @@ func (r *PostgresRepository) AddNodesBatch(nodes []models.Node) error {
 
 // Edge
 func (r *PostgresRepository) AddEdgesBatch(edges []models.Edge) error {
-	tx, err := r.db.Begin()
+	ctx, cancel := context.WithTimeout(context.Background(), 360*time.Second)
+	defer cancel()
+
+	tx, err := r.db.BeginTx(ctx, nil)
 	if err != nil {
 		return err
 	}
@@ -231,7 +245,7 @@ func (r *PostgresRepository) AddEdgesBatch(edges []models.Edge) error {
 	for _, edge := range edges {
 		metadata, _ := json.Marshal(edge.Metadata)
 
-		_, err := tx.Exec(`
+		_, err := tx.ExecContext(ctx, `
 			INSERT INTO edges (
 				id, graph_id, from_id, to_id,
 				label, weight, metadata, created_at
@@ -258,81 +272,7 @@ func (r *PostgresRepository) AddEdgesBatch(edges []models.Edge) error {
 	return tx.Commit()
 }
 
-// DB
-func createTables(db *sql.DB) error {
-	queries := []string{
-		`CREATE TABLE IF NOT EXISTS users (
-		id VARCHAR(36) PRIMARY KEY,
-		username VARCHAR(50) UNIQUE NOT NULL,
-		email VARCHAR(100) UNIQUE NOT NULL,
-		password VARCHAR(255) NOT NULL,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-	)`,
-		`CREATE TABLE IF NOT EXISTS graphs (
-		id VARCHAR(36) PRIMARY KEY,
-		user_id VARCHAR(36) NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-		name VARCHAR(100) NOT NULL,
-		description TEXT,
-		summary TEXT,
-		is_public BOOLEAN DEFAULT FALSE,
-		view_count INTEGER DEFAULT 0,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		updated_at TIMESTAMP NOT NULL DEFAULT NOW()
-	)`,
-		`CREATE TABLE IF NOT EXISTS documents (
-		id VARCHAR(36) PRIMARY KEY,
-		graph_id VARCHAR(36) NOT NULL REFERENCES graphs(id) ON DELETE CASCADE,
-		name VARCHAR(255) NOT NULL,
-		type VARCHAR(50) NOT NULL,
-		content TEXT,
-		size BIGINT,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW()
-	)`,
-		`CREATE TABLE IF NOT EXISTS nodes (
-		id VARCHAR(36) NOT NULL,
-		graph_id VARCHAR(36) NOT NULL REFERENCES graphs(id) ON DELETE CASCADE,
-		label VARCHAR(255) NOT NULL,
-		type VARCHAR(50),
-		metadata JSONB,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-		PRIMARY KEY (graph_id, id)
-	)`,
-		`CREATE TABLE IF NOT EXISTS edges (
-		id VARCHAR(36) PRIMARY KEY,
-		graph_id VARCHAR(36) NOT NULL REFERENCES graphs(id) ON DELETE CASCADE,
-		from_id VARCHAR(36) NOT NULL,
-		to_id VARCHAR(36) NOT NULL,
-		label VARCHAR(255),
-		weight FLOAT DEFAULT 1.0,
-		metadata JSONB,
-		created_at TIMESTAMP NOT NULL DEFAULT NOW(),
-
-		CONSTRAINT edges_from_fk
-		FOREIGN KEY (graph_id, from_id)
-		REFERENCES nodes(graph_id, id)
-		ON DELETE CASCADE,
-
-		CONSTRAINT edges_to_fk
-		FOREIGN KEY (graph_id, to_id)
-		REFERENCES nodes(graph_id, id)
-		ON DELETE CASCADE
-	)`,
-		`CREATE INDEX IF NOT EXISTS idx_graphs_user_id ON graphs(user_id)`,
-		`CREATE INDEX IF NOT EXISTS idx_nodes_graph_id ON nodes(graph_id)`,
-		`CREATE INDEX IF NOT EXISTS idx_edges_graph_id ON edges(graph_id)`,
-	}
-
-	for _, q := range queries {
-		if _, err := db.Exec(q); err != nil {
-			return err
-		}
-	}
-	return nil
-}
-
 // Document
-
 func (r *PostgresRepository) AddDocument(doc *models.Doc) error {
 	query := `
 		INSERT INTO documents (id, graph_id, name, type, content, size, created_at)

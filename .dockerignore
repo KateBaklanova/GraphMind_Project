@@ -1,0 +1,16 @@
+venv
+.venv
+env
+
+__pycache__
+*.pyc
+
+.git
+.idea
+.vscode
+
+node_modules
+
+data
+postgres_data
+ollama_data

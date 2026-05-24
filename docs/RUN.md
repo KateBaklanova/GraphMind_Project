@@ -1,4 +1,13 @@
-ЗАПУСК ЧЕРЕЗ ДОКЕР ЗДЕСЬ
+ЗАПУСК ЧЕРЕЗ ДОКЕР 
+
+----------------------
+docker compose up -d
+docker ps
+docker exec -it kg-ollama ollama pull mistral
+----------------------
+БД
+psql -U graph_user -d graphdb -h localhost -p 5432
+---------------------
 
 
 Пример для тестирования:

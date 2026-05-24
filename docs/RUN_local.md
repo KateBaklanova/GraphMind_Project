@@ -1,3 +1,6 @@
+ЛОКАЛЬНЫЙ ЗАПУСК ТЕТСИРОВАНИЕ
+
+-----------
 cd C:\Users\bakla\OneDrive\Документы\Graph
 venv\Scripts\activate
 PYTHONPATH = ""

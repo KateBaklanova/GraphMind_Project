@@ -1,5 +1,6 @@
 package app
 
+// удалить файл если не будет паблик ???
 import (
 	"errors"
 	"time"
